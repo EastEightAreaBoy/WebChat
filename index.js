@@ -14,18 +14,18 @@ app.use(express.static(__dirname + '/public'));
 
 // Chatroom
 
-//ÔÚÏßÓÃ»§ÊıÁ¿
+//åœ¨çº¿ç”¨æˆ·æ•°é‡
 var numUsers = 0;
-//ÓÃ»§ÃûµÄ¼¯ºÏ£¨ÆäÊµÊÇ¸ö¶ÔÏó£©
+//ç”¨æˆ·åçš„é›†åˆï¼ˆå…¶å®æ˜¯ä¸ªå¯¹è±¡ï¼‰
 var users={};
-//ÓÃ»§socketµÄ¼¯ºÏ£¨ÆäÊµÊÇ¸ö¶ÔÏó£©
+//ç”¨æˆ·socketçš„é›†åˆï¼ˆå…¶å®æ˜¯ä¸ªå¯¹è±¡ï¼‰
 var userSocket={};
 
 io.on('connection', function (socket) {
   var addedUser = false;
   console.log('-- user is online--');
   // when the client emits 'new message', this listens and executes
-  //¹ã²¥ĞÅÏ¢ÊÂ¼şnew message
+  //å¹¿æ’­ä¿¡æ¯äº‹ä»¶new message
   socket.on('new message', function (data) {
     // we tell the client to execute 'new message'
 	console.log('-- <new message> --'+socket.username+' : '+data);
@@ -35,43 +35,60 @@ io.on('connection', function (socket) {
     });
   });
 
-  //ÉèÖÃµÇÂ¼Ãû£¬ÉèÖÃºóÖÃaddedUserÎªtrue
+  //ç§èŠ
+  socket.on('private chat', function(msgPackage) {
+	console.log('-- <private chat>--from--'+socket.username+'-- to --'+msgPackage.toname+'--message: '+msgPackage.data);
+	//console.dir(userSocket[msgPackage.toname]);
+	userSocket[msgPackage.toname].emit('new message',{
+      username: socket.username,
+      message: '---------------æµ‹è¯•ä¿¡æ¯------------------'
+    });
+	console.log('--private chat--');
+	userSocket[msgPackage.toname].emit('private chat',{
+		fromname: socket.username,
+		toname: msgPackage.toname,
+		message: msgPackage.data
+	});
+  });
+
+  
+  //è®¾ç½®ç™»å½•åï¼Œè®¾ç½®åç½®addedUserä¸ºtrue
   socket.on('add user', function (username) {
 	console.log('-- <add user> --before if '+username);
     if (addedUser) return;
 	console.log('-- <add user> --after if '+username);
 
     // we store the username in the socket session for this client
-	//´æ´¢µÇÂ¼µÄÓÃ»§ÃûusernameÔÚsocketÖĞ.
+	//å­˜å‚¨ç™»å½•çš„ç”¨æˆ·åusernameåœ¨socketä¸­.
     ++numUsers;
 	addedUser = true;
 	socket.username = username;
-	//µÇÂ¼µÄÓÃ»§Ìí¼Óµ½ÁĞ±íÖĞ
+	//ç™»å½•çš„ç”¨æˆ·æ·»åŠ åˆ°åˆ—è¡¨ä¸­
 	users[username] = username;
 	userSocket[username] = socket;
 	console.log('-- username: ['+ username +'] userNumbers: '+ numUsers);
 	console.log('-- server send login for client include {numUsers: numUsers , online: users}');
-    //¸ø´ËÓÃ»§·¢ËÍloginÊÂ¼ş¡¾1.ÔÚÏßÓÃ»§ÊıÁ¿£¬2£¬ËùÓĞÔÚÏßÓÃ»§µÄÃû³Æ¼¯ºÏ¡¿.
+    //ç»™æ­¤ç”¨æˆ·å‘é€loginäº‹ä»¶ã€1.åœ¨çº¿ç”¨æˆ·æ•°é‡ï¼Œ2ï¼Œæ‰€æœ‰åœ¨çº¿ç”¨æˆ·çš„åç§°é›†åˆã€‘.
 	socket.emit('login', {
       numUsers: numUsers,
 	  online:users
     });
     // echo globally (all clients) that a person has connected
-	//---·¢ËÍËùÓĞÔÚÏßµÄÈË.
+	//---å‘é€æ‰€æœ‰åœ¨çº¿çš„äºº.
     socket.broadcast.emit('user joined', {
       username: socket.username,
       numUsers: numUsers,
 	  online:users
     });
   });
-  //µ±ÓÃ»§ÕıÔÚÊäÈëµÄÊ±ºò´¥·¢typingÊÂ¼ş
+  //å½“ç”¨æˆ·æ­£åœ¨è¾“å…¥çš„æ—¶å€™è§¦å‘typingäº‹ä»¶
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
     socket.broadcast.emit('typing', {
       username: socket.username
     });
   });
-  //µ±ÓÃ»§Í£Ö¹ÊäÈëµÄÊ±ºò´¥·¢stop typingÊÂ¼ş
+  //å½“ç”¨æˆ·åœæ­¢è¾“å…¥çš„æ—¶å€™è§¦å‘stop typingäº‹ä»¶
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
     socket.broadcast.emit('stop typing', {
@@ -79,14 +96,6 @@ io.on('connection', function (socket) {
     });
   });
 
-  //Ë½ÁÄ
-  socket.on('speak someone', function(onename) {
-	console.log('-- <speak someone>--'+onename+'--message: '+data);
-	userSocket[onename].emit('speak someone', {
-      username: socket.username,
-      message: data
-    });
-  });
 
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {
@@ -95,7 +104,7 @@ io.on('connection', function (socket) {
 	  var name = socket.username;
 	  console.log('-- user logout --');
 	  console.log('-- userSocket[name] --'+name+'  '+userSocket[name]);
-	  //console.log('-- userSocket[].length()£º'+userSocket.size);
+	  //console.log('-- userSocket[].length()ï¼š'+userSocket.size);
 	  delete userSocket[name];
 	  delete users[name];
       // echo globally that this client has left

@@ -25,6 +25,7 @@ $(function() {
   
   //our
   var $userTitle = $('.chatArea div');
+  var chatType = "all";//聊天的对象
   
   var socket = io();
   
@@ -47,7 +48,7 @@ $(function() {
 	$('.usesList').text("");
 	for(user in data.online) {
 		console.log('在线用户：'+user);
-		$('.usesList').append(" <li><a href='javascript:void(0);'>"+user+"<a/></li>");
+		$('.usesList').append(" <li><a href='javascript:void(0);' skid='"+user+"'>"+user+"<a/></li>");
 	}
 	$('.usesList').append(" <li><a href='javascript:void(0);' skid='all'>群发<a/></li>");
 	
@@ -56,11 +57,13 @@ $(function() {
 	$(".usesList li a").click(function(){
 		if(preUser!=null){
 			$(preUser).css("color","blue");
-			
 		}
-		
 		preUser=$(this);
 	    $(preUser).css("color","#a8f07a");
+		
+		//修改聊天的对象
+		chatType = $(this).attr("skid").trim();
+		console.log('-- 当前聊天的对象 chatType --'+chatType);
 	});
   }
 
@@ -97,32 +100,21 @@ $(function() {
         message: message
       });
       
-	  if(){
-		console.log('-- 私聊 --' + );
+	  if(chatType != 'all'){
+		console.log('-- 私聊 -- （'+username+'）to（'+chatType+'） --' + message);
+		socket.emit('private chat', {
+			toname:chatType,
+			data:message
+		});
 	  }else{
-		console.log('-- 广播 --' + message);
+		console.log('-- 广播 -- （'+username+'）' + message);
+		//告诉所有在线的用户去触发new message的事件，传递发送的信息。
+		socket.emit('new message', message);
 	  }
 	  // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
+      //socket.emit('new message', message);
     }
   }
-  
-  //私聊发送信息
-  /*functionc sendMsgToSomeone() {
-	  var message = $inputMessage.val();
-	  message = cleanInput(message);
-	  if (message && connected) {
-		  $inputMessage.val('');
-		  addChatMessage({
-			username: username,
-			message: message
-		  });
-      // tell server to execute 'new message' and send along one parameter
-	  console.log('-- 私聊 --'+);
-      socket.emit('speak someone', message);
-    }
-  }
-  */
   
   // Log a message
   function log (message, options) {
@@ -297,6 +289,16 @@ $(function() {
   // Whenever the server emits 'new message', update the chat body
   socket.on('new message', function (data) {
     addChatMessage(data);
+  });
+  
+  //私聊
+  socket.on('private chat', function(priPackage) {
+	 //console.dir(priPackage);
+	 console.log('-- 私聊信息添加 --<private chat>--'+priPackage.message);
+	 /*addChatMessage({
+		 username: priPackage.fromname,
+		 data: priPackage.message
+	 });*/
   });
 
   // Whenever the server emits 'user joined', log it in the chat body
