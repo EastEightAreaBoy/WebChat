@@ -39,13 +39,12 @@ io.on('connection', function (socket) {
   socket.on('private chat', function(msgPackage) {
 	console.log('-- <private chat>--from--'+socket.username+'-- to --'+msgPackage.toname+'--message: '+msgPackage.data);
 	//console.dir(userSocket[msgPackage.toname]);
-	userSocket[msgPackage.toname].emit('new message',{
+	/*userSocket[msgPackage.toname].emit('new message',{
       username: socket.username,
       message: '---------------测试信息------------------'
-    });
-	console.log('--private chat--');
+    });*/
 	userSocket[msgPackage.toname].emit('private chat',{
-		fromname: socket.username,
+		username: socket.username,
 		toname: msgPackage.toname,
 		message: msgPackage.data
 	});

@@ -295,10 +295,11 @@ $(function() {
   socket.on('private chat', function(priPackage) {
 	 //console.dir(priPackage);
 	 console.log('-- 私聊信息添加 --<private chat>--'+priPackage.message);
-	 /*addChatMessage({
-		 username: priPackage.fromname,
-		 data: priPackage.message
-	 });*/
+	 var data = {
+		username: priPackage.username+' (私聊)',
+		message: priPackage.message
+	 };
+	 addChatMessage(data);
   });
 
   // Whenever the server emits 'user joined', log it in the chat body
