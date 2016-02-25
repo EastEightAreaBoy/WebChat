@@ -12,7 +12,7 @@ server.listen(port, function () {
 // Routing
 app.use(express.static(__dirname + '/public'));
 
-// Chatroom 
+// Chatroom
 
 //在线用户数量
 var numUsers = 0;
