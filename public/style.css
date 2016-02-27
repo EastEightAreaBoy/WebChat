@@ -151,6 +151,7 @@ ul {
   right: 0;
   display: inline-block;
   /*width: 100%;*/
+  width:90%;
 }
 /* userlist */
 .usersDiv {
@@ -178,20 +179,21 @@ ul {
 }
 
 .tools {
-    border: 1px solid red;
+    
     bottom: 0;
     height: 60px;
     left: 0;
     right: 0;
     outline: none;
-    padding-left: 10px;
+    /*padding-left: 10px;*/
     position: absolute;
     width: 100%;
 }
 
 .tools_btn {
 	border: 0;
-    width: 50px;
+    width: 5%;
+	min-width: 45px;
     height: 100%;
     border-radius: 6px;
 	display: inline-block;
