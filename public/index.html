@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Web Chat Example</title>
+  <title>My Web Chat Example</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="/Images/favicon.ico" type="image/x-icon" />
   <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
@@ -22,7 +22,9 @@
 	  <div class="tools"><!--
 	    表情
 		--><input class="tools_btn" id="emoji" type="button" value="表情" /><!--
-		--><input class="tools_btn" id="file" type="button" value="文件" /><!-- 
+		--><a href="javascript:;" class="file-a tools_btn" onclick="javascript:document.getElementById('file').click();">
+			 文件<input class="tools_btn" id="file" type="file" value="文件" />
+		   </a><!-- 
 		输入框 
 		--><input class="inputMessage" placeholder="我是输入框..."/>
 	  </div>
@@ -34,6 +36,10 @@
       </div>
     </li>
   </ul>
+  
+  <!-- 表情缩略图 -->
+  <div id="emojiWrapper"></div>
+	  
   <script src="/jquery-1.10.2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/main.js"></script>

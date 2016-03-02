@@ -99,10 +99,6 @@ ul {
   font-size: 150%;
 }
 
-.inputMessage {
-  font-size: 100%;
-}
-
 .log {
   color: gray;
   font-size: 70%;
@@ -120,7 +116,7 @@ ul {
 }
 
 .messages {
-  height: 98%;
+  height: 94%;
   margin: 0;
   overflow-y: scroll;
   padding: 10px 20px 10px 20px;
@@ -142,6 +138,8 @@ ul {
 
 .inputMessage {
   border: 10px solid #000;
+  font-size: 100%;
+  border-radius: 6px;
   bottom: 0;
   height: 60px;
   outline: none;
@@ -179,7 +177,6 @@ ul {
 }
 
 .tools {
-    
     bottom: 0;
     height: 60px;
     left: 0;
@@ -191,15 +188,45 @@ ul {
 }
 
 .tools_btn {
+	color:black;
 	border: 0;
     width: 5%;
 	min-width: 45px;
     height: 100%;
     border-radius: 6px;
 	display: inline-block;
-    
+    font-weight: bold;
+    font-size: 0.77em;
+}
+input[type='file'] {
+	display:none;
+}
+.file-a {
+	line-height: 60px;
+	text-decoration:none;
+	text-align:center;
+	background-color:#1BBD1D;
+}
+#emoji {
+	background-color:#18DCBD;
 }
 
-#emoji {
-	
+#emojiWrapper img:hover {
+    background-color: green;
+}
+
+#emojiWrapper img {
+    margin: 2px;
+    padding: 2px;
+    width: 25px;
+    height: 25px;
+}
+
+#emojiWrapper {
+	display: none;
+    width: 500px;
+    bottom: 64px;
+    position: absolute;
+    background-color: #aaa;
+    box-shadow: 0 0 10px #555;
 }

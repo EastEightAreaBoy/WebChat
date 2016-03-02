@@ -1,3 +1,5 @@
+
+  
 $(function() {
   var FADE_TIME = 150; // ms
   var TYPING_TIMER_LENGTH = 400; // ms
@@ -136,7 +138,7 @@ $(function() {
       .text(data.username)
       .css('color', getUsernameColor(data.username));
     var $messageBodyDiv = $('<span class="messageBody">')
-      .text(data.message);
+      .html(showEmoji(data.message));
 
     var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
@@ -324,5 +326,75 @@ $(function() {
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
   });
+  
+  initemoji();
+  
+  //表情事件监听
+  $('#emoji').click(function (){
+	  var temp = $('#emojiWrapper').css('display');
+	  //console.log(temp);
+	  if(temp != 'none'){
+		  $('#emojiWrapper').css('display','none');
+	  }else {
+		  $('#emojiWrapper').css('display','block');
+	  }
+  });
+  
+  //初始化表情
+  function initemoji() {
+    var emojiContainer = document.getElementById('emojiWrapper'),
+  	  docFragment = document.createDocumentFragment();
+    for (var i = 1; i <= 69; i++) {
+  	  var emojiItem = document.createElement('img');
+  	  emojiItem.src = 'Images/emoji/' + i + '.gif';
+  	  emojiItem.title = i;
+  	  docFragment.appendChild(emojiItem);
+  	  //console.log(emojiItem.src);
+    };
+    emojiContainer.appendChild(docFragment);
+  };
+  
+  //当鼠标点击到其他地方的时候隐藏表情集合
+  document.body.addEventListener('click', function(e) {
+  	var emoji = document.getElementById('emoji');
+  	console.log('隐藏表情集合有效点击元素：');
+  	console.dir(emoji);
+  	console.log('鼠标点击的是：');
+  	console.dir(e.target);
+  	if (e.target != emoji) {
+  		document.getElementById('emojiWrapper').style.display = 'none';
+  	};
+  });
+  
+  document.getElementById('emojiWrapper').addEventListener('click', function(e) {
+    var target = e.target;
+    if (target.nodeName.toLowerCase() == 'img') {
+        var messageInput = $('.inputMessage');
+        messageInput.focus();
+	 var values = messageInput.val();
+	 if(typeof values == 'undefined'){
+	messageInput.val('[emoji:' + target.title + ']');			  
+	 }else{
+	messageInput.val(values + '[emoji:' + target.title + ']');
+	 }
+    };
+  }, false);
+  
+  function showEmoji(msg) {
+    var match, result = msg,
+        reg = /\[emoji:\d+\]/g,
+        emojiIndex,
+        totalEmojiNum = document.getElementById('emojiWrapper').children.length;
+    while (match = reg.exec(msg)) {
+        emojiIndex = match[0].slice(7, -1);
+        if (emojiIndex > totalEmojiNum) {
+            result = result.replace(match[0], '[X]');
+        } else {
+            result = result.replace(match[0], '<img class="emoji" src="./Images/emoji/' + emojiIndex + '.gif" />');//todo:fix this in chrome it will cause a new request for the image
+        };
+    };
+    return result;
+  }
 });
+
 
